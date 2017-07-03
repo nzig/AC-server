@@ -3,10 +3,10 @@ package hello
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/log"
 	"google.golang.org/appengine/user"
 
 	"cloud.google.com/go/pubsub"
@@ -64,7 +64,7 @@ func send(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	temp := r.FormValue("temp")
-	log.Printf("[%s] executed %s", u.Email, temp)
+	log.Infof(c, "[%s] executed %s", u.Email, temp)
 	client, err := pubsub.NewClient(c, projectName)
 	if err != nil {
 		http.Error(w, "Failed to create client", http.StatusForbidden)
