@@ -21,6 +21,11 @@ select {
   font-size: 16px;
 }
 
+#output {
+    margin-top: 10px;
+    text-align: center;
+}
+
 #form {
   max-width: 330px;
   padding: 15px;
@@ -38,4 +43,5 @@ select {
   left: 0;
   padding: 1rem;
   text-align: left;
+  font-size: 0.5em;
 }
