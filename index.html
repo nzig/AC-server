@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>AC controller</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="stylesheet" href="style.css">
+		<script src="script.js"></script>
+		<meta name="theme-color" content="#48a7db">
+		<link rel="icon" type="image/png" href="air-conditioner.png">
+	</head>
+	<body>
+		<div class="container" id="form">
+			<div class="form-group">
+				<select class="form-control" id="temp">
+					<option>off</option>
+					<option>16</option>
+					<option>17</option>
+					<option>18</option>
+					<option>19</option>
+					<option>20</option>
+					<option>21</option>
+					<option>22</option>
+					<option>23</option>
+					<option>24</option>
+					<option>25</option>
+					<option>26</option>
+					<option>27</option>
+					<option>28</option>
+					<option>29</option>
+					<option>30</option>
+				</select> 
+			</div>
+			<button onclick="sendData()" class="btn btn-default btn-lg btn-primary btn-block">Send</button>
+		</div>
+		<div id="output" class="container">
+		</div>
+		<div class="footer">Icons made by <a href="http://www.flaticon.com/authors/darius-dan" title="Swifticons">Swifticons</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+	</body>
+</html>

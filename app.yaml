@@ -2,6 +2,15 @@ runtime: go
 api_version: go1
 
 handlers:
+- url: /
+  static_files: index.html
+  upload: index.html
+  login : required
+
+- url: /(.*\.(css|js|png))$
+  static_files: static/\1
+  upload: static/.*\.(css|js|png)$
+
 - url: /.*
   script: _go_app
   login : required
