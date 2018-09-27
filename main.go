@@ -40,7 +40,6 @@ func send(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Debugf(ctx, "topic: %v", topic)
 	result := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte(temperature),
 		Attributes: map[string]string{
@@ -66,35 +65,33 @@ func isAllowedUser(email string) bool {
 }
 
 var gTopic *pubsub.Topic
-var gClient *pubsub.Client
 
 func getTopic(ctx context.Context) (*pubsub.Topic, error) {
-	if gClient == nil {
-		client, err := pubsub.NewClient(ctx, projectName)
-		if err != nil {
-			log.Errorf(ctx, "Error creating client: %v", err)
-			return nil, errors.New("Failed to create pubsub client")
-		}
-		gClient = client
+	if gTopic != nil {
+		return gTopic, nil
 	}
 
-	if gTopic == nil {
-		topic := gClient.Topic(topicName)
-		exists, err := topic.Exists(ctx)
-		if err != nil {
-			log.Errorf(ctx, "Error checking for topic: %v", err)
-			return nil, errors.New("Failed checking for pubsub topic")
-		}
-		if !exists {
-			newTopic, err := gClient.CreateTopic(ctx, topicName)
-			if err != nil {
-				log.Errorf(ctx, "Failed to create topic: %v", err)
-				return nil, errors.New("Failed creating pubsub topic")
-			}
-			gTopic = newTopic
-		}
-		gTopic = topic
+	client, err := pubsub.NewClient(ctx, projectName)
+	if err != nil {
+		log.Errorf(ctx, "Error creating client: %v", err)
+		return nil, errors.New("Failed to create pubsub client")
 	}
 
-	return gTopic, nil
+	topic := client.Topic(topicName)
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		log.Errorf(ctx, "Error checking for topic: %v", err)
+		return nil, errors.New("Failed checking for pubsub topic")
+	}
+	if !exists {
+		newTopic, err := client.CreateTopic(ctx, topicName)
+		if err != nil {
+			log.Errorf(ctx, "Failed to create topic: %v", err)
+			return nil, errors.New("Failed creating pubsub topic")
+		}
+		topic = newTopic
+	}
+	//gTopic = topic
+
+	return topic, nil
 }

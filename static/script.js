@@ -14,7 +14,7 @@ async function sendData(){
         });
         if(!r.ok)
         {
-            throw new Error(`Posting to server failed: ${r.statusText}`);
+            throw new Error(r.statusText);
         }
         const text = await r.text();
         statusElement
