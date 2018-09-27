@@ -1,6 +1,8 @@
 package hello
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -13,6 +15,7 @@ import (
 )
 
 const projectName string = "kodicloud-169614"
+const topicName string = "AirCon"
 
 func init() {
 	http.HandleFunc("/send", send)
@@ -29,16 +32,13 @@ func send(w http.ResponseWriter, r *http.Request) {
 
 	temperature := r.FormValue("temp")
 	log.Infof(c, "[%s] executed %s", u.Email, temperature)
-	client, err := pubsub.NewClient(c, projectName)
+
+	topic, err := getTopic(c)
 	if err != nil {
-		http.Error(w, "Failed to create client", http.StatusForbidden)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	topic := client.Topic("AirCon")
-	if topic == nil {
-		http.Error(w, "Failed to get topic", http.StatusForbidden)
-		return
-	}
+
 	result := topic.Publish(c, &pubsub.Message{
 		Data: []byte(temperature),
 		Attributes: map[string]string{
@@ -61,4 +61,38 @@ func isAllowedUser(email string) bool {
 		return true
 	}
 	return false
+}
+
+var gTopic *pubsub.Topic
+var gClient *pubsub.Client
+
+func getTopic(ctx context.Context) (*pubsub.Topic, error) {
+	if gClient == nil {
+		client, err := pubsub.NewClient(ctx, projectName)
+		if err != nil {
+			log.Errorf(ctx, "Error creating client: %v", err)
+			return nil, errors.New("Failed to create pubsub client")
+		}
+		gClient = client
+	}
+
+	if gTopic == nil {
+		topic := client.Topic(topicName)
+		exists, err := topic.Exists(ctx)
+		if err != nil {
+			log.Errorf(ctx, "Error checking for topic: %v", err)
+			return nil, errors.New("Failed checking for pubsub topic")
+		}
+		if !exists {
+			newTopic, err := gClient.CreateTopic(ctx, topicName)
+			if err != nil {
+				log.Errorf(ctx, "Failed to create topic: %v", err)
+				return nil, errors.New("Failed creating pubsub topic")
+			}
+			gTopic = newTopic
+		}
+		gTopic = topic
+	}
+
+	return gTopic, nil
 }
