@@ -6,7 +6,7 @@ async function sendData(){
     try {
         const temperature = document.getElementById('temp').value;
         const formData = new FormData();
-        formData.append('temp', temp);
+        formData.append('temp', temperature);
         const r = await fetch('/send', {
             method: 'POST',
             credentials: 'include',
@@ -64,4 +64,4 @@ class StatusElement {
 document.addEventListener("DOMContentLoaded", () => {
     statusElement = new StatusElement();
     document.getElementById("button").addEventListener("click", sendData);
-})
+});
