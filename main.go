@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"context"
@@ -17,13 +17,14 @@ import (
 const projectName string = "kodicloud-169614"
 const topicName string = "AirCon"
 
-func init() {
+func main() {
 	http.HandleFunc("/send", send)
+	appengine.Main()
 }
 
 func send(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	u := user.Current(c)
+	ctx := appengine.NewContext(r)
+	u := user.Current(ctx)
 	if !isAllowedUser(u.Email) {
 		errMsg := fmt.Sprintf("%s Not Allowed", u.Email)
 		http.Error(w, errMsg, http.StatusForbidden)
@@ -31,23 +32,24 @@ func send(w http.ResponseWriter, r *http.Request) {
 	}
 
 	temperature := r.FormValue("temp")
-	log.Infof(c, "[%s] executed %s", u.Email, temperature)
+	log.Infof(ctx, "[%s] executed %s", u.Email, temperature)
 
-	topic, err := getTopic(c)
+	topic, err := getTopic(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	result := topic.Publish(c, &pubsub.Message{
+	log.Debugf(ctx, "topic: %v", topic)
+	result := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte(temperature),
 		Attributes: map[string]string{
 			"user": u.Email,
 		},
 	})
-	_, err = result.Get(c)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if _, err := result.Get(ctx); err != nil {
+		log.Errorf(ctx, "Error getting result of Publish: %v", err)
+		http.Error(w, "Failed publishing message", http.StatusInternalServerError)
 		return
 	}
 	fmt.Fprintf(w, "Sent %s", template.HTMLEscapeString(temperature))
