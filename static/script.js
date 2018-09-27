@@ -12,7 +12,7 @@ async function sendData(){
             credentials: 'include',
             body: formData
         });
-        if(!r.ok())
+        if(!r.ok)
         {
             throw new Error(`Posting to server failed: ${r.statusText}`);
         }
