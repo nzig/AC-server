@@ -1,4 +1,4 @@
-package hello
+package server
 
 import (
 	"context"
@@ -77,7 +77,7 @@ func getTopic(ctx context.Context) (*pubsub.Topic, error) {
 	}
 
 	if gTopic == nil {
-		topic := client.Topic(topicName)
+		topic := gClient.Topic(topicName)
 		exists, err := topic.Exists(ctx)
 		if err != nil {
 			log.Errorf(ctx, "Error checking for topic: %v", err)
